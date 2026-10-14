@@ -1,0 +1,33 @@
+---
+import { site } from "../data/site";
+
+const { contact } = site;
+---
+
+<section class="section" id="contact">
+  <div class="wrap">
+    <div class="panel contact">
+      <div class="hazard" aria-hidden="true"></div>
+      <p class="section__label">04 — Contact</p>
+      <h2>{contact.title}</h2>
+      <p class="section__intro">{contact.text}</p>
+      <a class="contact__mail" href={`mailto:${site.email}`}>{site.email}</a>
+      <ul class="contact__links">
+        {
+          site.links.map((link) => (
+            <li>
+              <a href={link.href}>{link.label} ↗</a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <span>© {new Date().getFullYear()} {site.name}</span>
+    <span>{site.location}</span>
+  </div>
+</footer>

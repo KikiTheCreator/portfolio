@@ -1,0 +1,46 @@
+---
+import { site } from "../data/site";
+
+const { work } = site;
+---
+
+<section class="section" id="work">
+  <div class="wrap">
+    <header class="section__head">
+      <p class="section__label">01 — Work</p>
+      <h2>{work.title}</h2>
+      <p class="section__intro">{work.intro}</p>
+    </header>
+
+    <div class="projects">
+      {
+        work.projects.map((project, index) => (
+          <article class="project">
+            <div class="project__id">
+              <span>TX-{String(index + 1).padStart(3, "0")}</span>
+              <span>{project.year}</span>
+            </div>
+
+            <div class="project__main">
+              <p class="project__kind">{project.kind}</p>
+              <h3>{project.name}</h3>
+              <p class="project__summary">{project.summary}</p>
+              <ul class="tags">
+                {project.tags.map((tag) => <li>{tag}</li>)}
+              </ul>
+              <p class="project__links">
+                {project.links.map((link) => <a href={link.href}>{link.label} ↗</a>)}
+              </p>
+            </div>
+
+            <div class="project__result">
+              <p class="project__value">{project.metric.value}</p>
+              <p class="project__label">{project.metric.label}</p>
+              <p class:list={["pill", { "pill--wip": project.status !== "Live" }]}>{project.status}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

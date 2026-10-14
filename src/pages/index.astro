@@ -1,0 +1,35 @@
+---
+import "@fontsource/courier-prime/400.css";
+import "@fontsource/courier-prime/400-italic.css";
+import "@fontsource/courier-prime/700.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
+import "@fontsource/libre-bodoni/400.css";
+import "../styles/home.css";
+import Layout from "../layouts/Layout.astro";
+import SidePanel from "../components/SidePanel.astro";
+import Board from "../components/Board.astro";
+// Fonts of the first screen. Loading them early stops the text from
+// showing in a fallback font and then jumping.
+import courier from "@fontsource/courier-prime/files/courier-prime-latin-400-normal.woff2?url";
+import courierItalic from "@fontsource/courier-prime/files/courier-prime-latin-400-italic.woff2?url";
+import courierBold from "@fontsource/courier-prime/files/courier-prime-latin-700-normal.woff2?url";
+import inter from "@fontsource/inter/files/inter-latin-400-normal.woff2?url";
+import interSemi from "@fontsource/inter/files/inter-latin-600-normal.woff2?url";
+import interBold from "@fontsource/inter/files/inter-latin-700-normal.woff2?url";
+import bodoni from "@fontsource/libre-bodoni/files/libre-bodoni-latin-400-normal.woff2?url";
+
+const preload = [courier, courierItalic, courierBold, inter, interSemi, interBold, bodoni];
+---
+
+<Layout>
+  <Fragment slot="head">
+    {preload.map((href) => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
+  </Fragment>
+  <div class="split">
+    <SidePanel />
+    <Board />
+  </div>
+</Layout>

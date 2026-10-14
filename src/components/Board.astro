@@ -1,0 +1,97 @@
+---
+import { site } from "../data/site";
+import { elapsed } from "../data/elapsed";
+
+const { summary, work, experience, about } = site;
+const projects = work.projects;
+// With an odd number of projects the last tile spans both columns.
+const lastIsWide = projects.length % 2 === 1;
+---
+
+<main id="main" class="board">
+  <dl class="tile figures" aria-label={summary.title}>
+    {
+      summary.rows.map((row) => (
+        <div>
+          <dt>{row.label}</dt>
+          {"since" in row && row.since ? (
+            <dd data-since={row.since}>{elapsed(row.since)}</dd>
+          ) : (
+            <dd>{row.value}</dd>
+          )}
+        </div>
+      ))
+    }
+  </dl>
+
+  <section class="board__pair board--swipe" aria-label={work.title}>
+    {
+      projects.map((project, index) => (
+        <article class:list={["tile", "job", { "job--wide": lastIsWide && index === projects.length - 1 }]}>
+          <p class="tile__kind">
+            TX-{String(index + 1).padStart(3, "0")} · {project.kind} · {project.year}
+          </p>
+          <p class="job__value">{project.metric.value}</p>
+          <p class="job__label">{project.metric.label}</p>
+          <h2 class="job__name">{project.name}</h2>
+          <p class="job__summary">{project.summary}</p>
+          <p class="job__foot">
+            <span class:list={["state", { "state--wip": project.status !== "Live" }]}>{project.status}</span>
+            <span>{project.tags.join(" / ")}</span>
+            {project.links.map((link) => <a href={link.href}>{link.label} ↗</a>)}
+          </p>
+        </article>
+      ))
+    }
+  </section>
+
+  <div class="board__pair">
+    <section class="tile">
+      <h2 class="tile__label">{experience.title}</h2>
+      <ol class="rows">
+        {
+          experience.entries.map((entry) => (
+            <li class="rows__entry">
+              <p class="rows__period">{entry.period}</p>
+              <div>
+                <p>
+                  <strong>{entry.role}</strong> · {entry.place}
+                </p>
+                <p class="rows__note">{entry.note}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="tile">
+      <h2 class="tile__label">How I work</h2>
+      <ul class="rows">
+        {
+          about.principles.map((principle) => (
+            <li>
+              <strong>{principle.title}</strong>
+              <p class="rows__note">{principle.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+
+  <div class="board__pair">
+    <section class="tile bio">
+      <h2 class="tile__label">{about.title}</h2>
+      {about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+    </section>
+
+    <section class="tile">
+      <h2 class="tile__label">Stack</h2>
+      <ul class="chips">
+        {site.stack.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+  </div>
+</main>
+

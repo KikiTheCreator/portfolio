@@ -1,0 +1,56 @@
+---
+import { themes } from "../data/site";
+---
+
+<div class="units" role="group" aria-label="Color theme">
+  <span class="units__label">Unit</span>
+  {
+    themes.map((theme) => (
+      <button
+        type="button"
+        class="unit"
+        data-theme={theme.id}
+        data-set-theme={theme.id}
+        aria-pressed="false"
+        aria-label={`Theme ${theme.label}`}
+      >
+        <span class="unit__swatch" />
+        {theme.label}
+      </button>
+    ))
+  }
+</div>
+
+<!-- Marks the active button before the first paint. -->
+<script is:inline>
+  document.querySelectorAll("[data-set-theme]").forEach((button) => {
+    button.setAttribute(
+      "aria-pressed",
+      String(button.dataset.setTheme === document.documentElement.dataset.theme),
+    );
+  });
+</script>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>("[data-set-theme]");
+
+  function mark(active: string | undefined) {
+    buttons.forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.setTheme === active));
+    });
+  }
+
+  mark(document.documentElement.dataset.theme);
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const theme = button.dataset.setTheme!;
+      document.documentElement.dataset.theme = theme;
+      document.querySelector<HTMLLinkElement>('link[rel="icon"]')!.href = `/favicon-${theme}.svg`;
+      try {
+        localStorage.setItem("theme", theme);
+      } catch {}
+      mark(theme);
+    });
+  });
+</script>

@@ -1,0 +1,54 @@
+---
+import ThemeSwitch from "./ThemeSwitch.astro";
+import { site } from "../data/site";
+
+const { hero } = site;
+
+// The 0–23 grid from the label, in its three rows.
+// The circled number is the active Unit theme (see home.css).
+const numberRows = [
+  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+  [10, 11, 12, 13, 14, 15, 16],
+  [17, 18, 19, 20, 21, 22, 23],
+];
+---
+
+<aside class="side">
+  <div class="side__top">
+    <p class="side__eyebrow">{hero.eyebrow}</p>
+    <ThemeSwitch />
+  </div>
+
+  <div class="mark">
+    <div class="mark__numbers" aria-hidden="true">
+      {
+        numberRows.map((row) => (
+          <p>
+            {row.map((n) => <span data-n={n}>{n}</span>)}
+          </p>
+        ))
+      }
+    </div>
+    <p class="mark__name">{site.name}</p>
+    <p class="mark__role">{site.shortRole}</p>
+  </div>
+
+  <h1 class="side__title">
+    {hero.headline.before}{" "}<em>{hero.headline.highlight}</em>{" "}{hero.headline.after}
+  </h1>
+
+  <div class="side__bottom">
+    <span class="state">{site.status}</span>
+    <a class="side__mail" href={`mailto:${site.email}`}>{site.email}</a>
+    <ul class="side__links">
+      {
+        site.links.map((link) => (
+          <li>
+            <a href={link.href}>{link.label} ↗</a>
+          </li>
+        ))
+      }
+    </ul>
+    <a class="side__scroll" href="#main">↓ Scroll</a>
+  </div>
+</aside>

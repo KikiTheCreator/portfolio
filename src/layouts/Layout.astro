@@ -1,0 +1,48 @@
+---
+import "@fontsource/ibm-plex-sans/400.css";
+import "@fontsource/ibm-plex-sans/500.css";
+import "@fontsource/ibm-plex-sans/600.css";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
+import "@fontsource-variable/bodoni-moda/wght.css";
+import "@fontsource-variable/bodoni-moda/wght-italic.css";
+import "../styles/themes.css";
+import "../styles/global.css";
+import { site, themes } from "../data/site";
+
+const themeIds = themes.map((theme) => theme.id);
+---
+
+<!doctype html>
+<html lang="en" data-theme={site.defaultTheme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- One icon per theme in public/. The scripts swap it with the theme. -->
+    <link rel="icon" type="image/svg+xml" href={`/favicon-${site.defaultTheme}.svg`} />
+    <slot name="head" />
+    <title>{site.name}</title>
+    <meta name="description" content={site.hero.intro} />
+    <!-- Runs before paint so a saved theme never flashes the default one. -->
+    <script is:inline define:vars={{ themeIds }}>
+      try {
+        const saved = localStorage.getItem("theme");
+        if (themeIds.includes(saved)) {
+          document.documentElement.dataset.theme = saved;
+          document.querySelector('link[rel="icon"]').href = `/favicon-${saved}.svg`;
+        }
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <slot />
+    <script>
+      import { elapsed } from "../data/elapsed";
+
+      document.querySelectorAll<HTMLElement>("[data-since]").forEach((el) => {
+        el.textContent = elapsed(el.dataset.since!);
+      });
+    </script>
+  </body>
+</html>

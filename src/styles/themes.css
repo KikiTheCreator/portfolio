@@ -1,0 +1,48 @@
+/* Three themes inspired by the Evangelion units.
+   Each one only changes these variables, so adding a fourth theme
+   means copying one block and changing the colors. */
+
+:root,
+[data-theme="unit-01"] {
+  /* Unit-01: violet armor, acid green, orange detail */
+  --bg: #0e0919;
+  --surface: #170f29;
+  --surface-2: #20163a;
+  --line: #33245a;
+  --text: #efeafb;
+  --muted: #a59bc4;
+  --primary: #8f5cf7;
+  --accent: #a8f230;
+  --detail: #ff8a1f;
+  --on-accent: #0e0919;
+}
+
+[data-theme="unit-00"] {
+  /* Unit-00: the only light theme. White plating and cobalt armor,
+     with Rei's red eyes and the cyan of the unit's eye as details. */
+  --bg: #f2f4fb;
+  --surface: #ffffff;
+  --surface-2: #e6eaf8;
+  --line: #c5cdea;
+  --text: #0f1538;
+  --muted: #535d86;
+  --primary: #d1263f;
+  --accent: #2c40d2;
+  --detail: #0a7c99;
+  --on-accent: #ffffff;
+  color-scheme: light;
+}
+
+[data-theme="unit-02"] {
+  /* Unit-02: red armor, orange plating, green eyes */
+  --bg: #140707;
+  --surface: #200d0c;
+  --surface-2: #2e1311;
+  --line: #55211d;
+  --text: #fbeeea;
+  --muted: #c9a199;
+  --primary: #ef3a36;
+  --accent: #ff9a1f;
+  --detail: #5fe07a;
+  --on-accent: #140707;
+}

@@ -1,0 +1,30 @@
+---
+import { site } from "../data/site";
+
+const { experience } = site;
+---
+
+<section class="section" id="experience">
+  <div class="wrap">
+    <header class="section__head">
+      <p class="section__label">02 — Experience</p>
+      <h2>{experience.title}</h2>
+      <p class="section__intro">{experience.intro}</p>
+    </header>
+
+    <ol class="ledger">
+      {
+        experience.entries.map((entry) => (
+          <li class="ledger__row">
+            <p class="ledger__period">{entry.period}</p>
+            <div>
+              <h3>{entry.role}</h3>
+              <p class="ledger__place">{entry.place}</p>
+            </div>
+            <p class="ledger__note">{entry.note}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

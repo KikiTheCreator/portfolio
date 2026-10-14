@@ -1,0 +1,82 @@
+---
+import { site } from "../data/site";
+import { elapsed } from "../data/elapsed";
+
+const { hero, summary } = site;
+
+// Turn the list of numbers into an SVG line that fills a 300x80 box.
+const width = 300;
+const height = 80;
+const points = summary.chartPoints;
+const max = Math.max(...points);
+const min = Math.min(...points);
+const range = max - min || 1;
+const coords = points.map((value, index) => {
+  const x = (index / (points.length - 1)) * width;
+  const y = height - 6 - ((value - min) / range) * (height - 12);
+  return `${x.toFixed(1)},${y.toFixed(1)}`;
+});
+const line = coords.join(" ");
+const area = `0,${height} ${line} ${width},${height}`;
+---
+
+<section class="hero" id="top">
+  <div class="wrap hero__grid">
+    <div class="hero__copy">
+      <p class="eyebrow">
+        <span>{hero.eyebrow}</span>
+        <span class="eyebrow__sep" aria-hidden="true">//</span>
+        <span>{site.role}</span>
+      </p>
+      <h1 class="hero__title">
+        {hero.headline.before}{" "}<em>{hero.headline.highlight}</em>{" "}{hero.headline.after}
+      </h1>
+      <p class="hero__intro">{hero.intro}</p>
+      <div class="hero__actions">
+        <a class="button button--solid" href={hero.primaryCta.href}>{hero.primaryCta.label}</a>
+        <a class="button" href={hero.secondaryCta.href}>{hero.secondaryCta.label}</a>
+      </div>
+    </div>
+
+    <aside class="panel summary" aria-label={summary.title}>
+      <div class="summary__head">
+        <span>{summary.title}</span>
+        <span class="status"><span class="status__dot" />{site.status}</span>
+      </div>
+      <dl class="summary__rows">
+        {
+          summary.rows.map((row) => (
+            <div class="summary__row">
+              <dt>{row.label}</dt>
+              {"since" in row && row.since ? (
+                <dd data-since={row.since}>{elapsed(row.since)}</dd>
+              ) : (
+                <dd>{row.value}</dd>
+              )}
+            </div>
+          ))
+        }
+      </dl>
+      <figure class="chart">
+        <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-hidden="true">
+          <polygon class="chart__area" points={area}></polygon>
+          <polyline class="chart__line" points={line}></polyline>
+        </svg>
+        <figcaption>{summary.chartLabel}</figcaption>
+      </figure>
+      <p class="summary__foot">{site.location}</p>
+    </aside>
+  </div>
+
+  <div class="ticker">
+    <div class="ticker__track">
+      {
+        [0, 1].map((copy) => (
+          <ul aria-hidden={copy === 1 ? "true" : undefined}>
+            {site.stack.map((item) => <li>{item}</li>)}
+          </ul>
+        ))
+      }
+    </div>
+  </div>
+</section>

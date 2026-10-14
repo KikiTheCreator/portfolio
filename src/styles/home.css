@@ -1,0 +1,431 @@
+/* Home page: a solid block of the Unit color on the left,
+   a board of tiles on the right. */
+
+/* The "Label" type: typewriter text, with the plain bold sans of the
+   number grid. Scoped to this page so /classic keeps its own fonts. */
+.split {
+  --font-display: "Courier Prime", "Courier New", monospace;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "Courier Prime", "Courier New", monospace;
+  font-family: var(--font-body);
+  display: grid;
+  grid-template-columns: minmax(320px, 38%) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+/* ── Side panel ─────────────────────────────────────── */
+
+.side {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  padding: clamp(24px, 4vw, 56px);
+  background: var(--accent);
+  color: var(--on-accent);
+  /* Theme buttons carry their own colors, so pass the panel's ink down. */
+  --panel-ink: var(--on-accent);
+}
+
+.side .unit[aria-pressed="true"] {
+  outline: 2px solid var(--panel-ink);
+  outline-offset: 2px;
+}
+
+.side ::selection {
+  background: var(--on-accent);
+  color: var(--accent);
+}
+
+.side :focus-visible {
+  outline-color: currentColor;
+}
+
+.side__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.side__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+/* The buttons keep their own theme colors, only the label follows the panel. */
+.side .units__label {
+  display: none;
+}
+
+/* The logo: three justified rows (0–9, 10–16, 17–23) with the name
+   set to the same width underneath. */
+.mark {
+  width: 13rem;
+  margin-top: 24px;
+  text-align: center;
+}
+
+.mark__numbers {
+  font-family: var(--font-body);
+  font-size: 0.96rem;
+  font-weight: 700;
+  line-height: 1.32;
+  font-variant-numeric: tabular-nums;
+}
+
+.mark__numbers p {
+  display: flex;
+  justify-content: space-between;
+}
+
+.mark__numbers span {
+  position: relative;
+}
+
+[data-theme="unit-00"] .mark [data-n="0"]::after,
+[data-theme="unit-01"] .mark [data-n="1"]::after,
+[data-theme="unit-02"] .mark [data-n="2"]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.5em;
+  height: 1.5em;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  transform: translate(-50%, -52%);
+}
+
+.mark__name {
+  margin-top: 1px;
+  font-family: "Libre Bodoni", Georgia, serif;
+  font-size: 1.5rem;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.mark__role {
+  margin-top: 4px;
+  font-family: "Libre Bodoni", Georgia, serif;
+  font-size: 0.56rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.side__title {
+  margin-top: auto;
+  padding-top: 32px;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.9vw, 3.7rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.side__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid currentColor;
+}
+
+.side .state {
+  border-color: currentColor;
+  color: inherit;
+}
+
+.side__mail {
+  border-bottom: 2px solid currentColor;
+  font-family: var(--font-display);
+  font-size: 0.86rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.side__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+}
+
+.side__links a {
+  border-bottom: 1px solid currentColor;
+}
+
+.side__scroll {
+  display: none;
+  flex-basis: 100%;
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.side__mail:hover,
+.side__links a:hover {
+  opacity: 0.7;
+}
+
+/* ── Board of tiles ─────────────────────────────────── */
+
+.board {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+  padding: clamp(20px, 3vw, 40px);
+}
+
+.board__pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tile {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.tile__label {
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.tile__kind {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--detail);
+}
+
+.state {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--accent);
+}
+
+.state--wip {
+  border-color: var(--detail);
+  color: var(--detail);
+}
+
+.figures {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  font-family: var(--font-mono);
+}
+
+.figures dt {
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.figures dd {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.job {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.job--wide {
+  grid-column: 1 / -1;
+}
+
+.job__value {
+  font-family: var(--font-mono);
+  font-size: clamp(2.2rem, 4.4vw, 3.4rem);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.job__label {
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
+.job__name {
+  margin-top: 14px;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.job__summary {
+  max-width: 62ch;
+  font-size: 0.94rem;
+  color: var(--muted);
+}
+
+.job__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: auto;
+  padding-top: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.job__foot a {
+  border-bottom: 1px solid var(--primary);
+  color: var(--text);
+}
+
+.job__foot a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.rows li {
+  padding-block: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.rows li:first-child {
+  border-top: 0;
+}
+
+.rows strong {
+  font-weight: 600;
+}
+
+.rows__entry {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: 14px;
+}
+
+.rows__period {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+
+.rows__note {
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.bio p {
+  color: var(--muted);
+}
+
+.bio p + p {
+  margin-top: 10px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chips li {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+/* ── Small screens ──────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Phones: the color panel is a full first screen, projects swipe sideways. */
+  .side {
+    position: static;
+    height: auto;
+    min-height: 100svh;
+    padding: 22px;
+  }
+
+  .side__title {
+    font-size: 2.9rem;
+  }
+
+  .side__scroll {
+    display: block;
+  }
+
+  .board {
+    padding: 16px 0;
+  }
+
+  .board > * {
+    margin-inline: 16px;
+  }
+
+  .board > .board--swipe {
+    display: flex;
+    gap: 12px;
+    margin-inline: 0;
+    padding: 0 16px 6px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .board--swipe .job {
+    flex: 0 0 84%;
+    scroll-snap-align: center;
+  }
+
+  .figures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .board__pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

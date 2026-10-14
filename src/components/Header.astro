@@ -1,0 +1,26 @@
+---
+import ThemeSwitch from "./ThemeSwitch.astro";
+import { site } from "../data/site";
+
+const nav = [
+  { label: "Work", href: "#work" },
+  { label: "Experience", href: "#experience" },
+  { label: "About", href: "#about" },
+  { label: "Contact", href: "#contact" },
+];
+---
+
+<header class="header">
+  <div class="wrap header__inner">
+    <a class="brand" href="#top">
+      <span class="brand__mark">{site.initials}</span>
+      <span class="brand__name">{site.name}</span>
+    </a>
+
+    <nav class="nav" aria-label="Sections">
+      {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+
+    <ThemeSwitch />
+  </div>
+</header>
