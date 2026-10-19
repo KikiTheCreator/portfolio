@@ -57,13 +57,13 @@ const area = `0,${height} ${line} ${width},${height}`;
           ))
         }
       </dl>
-      <figure class="chart">
+      {summary.chartPoints.length > 1 && <figure class="chart">
         <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-hidden="true">
           <polygon class="chart__area" points={area}></polygon>
           <polyline class="chart__line" points={line}></polyline>
         </svg>
         <figcaption>{summary.chartLabel}</figcaption>
-      </figure>
+      </figure>}
       <p class="summary__foot">{site.location}</p>
     </aside>
   </div>
