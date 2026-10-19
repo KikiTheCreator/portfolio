@@ -55,14 +55,15 @@ export const site = {
   // The moving strip under the hero. Tools you really use.
   stack: [
     "TypeScript",
-    "JavaScript",
-    "Next.js",
+    "Node.js",
+    "PostgreSQL",
     "React",
-    "React Native",
-    "Astro",
-    "Tailwind CSS",
-    "Shadcn UI",
-    "CSS Modules",
+    "Python",
+    "Docker",
+    "REST APIs",
+    "Testing",
+    "SQL",
+    "Git",
   ],
 
   work: {
