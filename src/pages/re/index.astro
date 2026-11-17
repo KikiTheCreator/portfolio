@@ -1,0 +1,120 @@
+---
+import Bare from "../../layouts/Bare.astro";
+import { concepts } from "../../data/concepts";
+---
+
+<Bare>
+  <main class="list">
+    <p class="list__eyebrow">Portfolio / Saved designs</p>
+    <h1>Other ways this site could look.</h1>
+    <p class="list__lead">
+      Kept for later. Same text, taken from <code>site.ts</code>; only the design changes. <a href="/">Back to the current site →</a>
+    </p>
+    <ol>
+      {
+        concepts.map((concept, index) => (
+          <li>
+            <a href={`/re/${concept.slug}`}>
+              <span class="list__n">{String(index + 1).padStart(2, "0")}</span>
+              <span class="list__name">{concept.name}</span>
+              <span class="list__blurb">{concept.blurb}</span>
+              <span class="list__go" aria-hidden="true">→</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </main>
+</Bare>
+
+<style is:global>
+  body {
+    background: #f4f3ef;
+    color: #141414;
+    font: 16px/1.5 system-ui, sans-serif;
+  }
+
+  .list {
+    max-width: 880px;
+    margin-inline: auto;
+    padding: clamp(40px, 9vw, 110px) 24px 80px;
+  }
+
+  .list__eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #6a6a66;
+  }
+
+  .list h1 {
+    margin-top: 12px;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 650;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .list__lead {
+    margin-top: 16px;
+    color: #55554f;
+  }
+
+  .list__lead a {
+    border-bottom: 1px solid currentColor;
+    color: #141414;
+  }
+
+  .list ol {
+    margin-top: 44px;
+    border-top: 1px solid #141414;
+  }
+
+  .list li a {
+    display: grid;
+    grid-template-columns: 3rem 10rem minmax(0, 1fr) 2rem;
+    align-items: baseline;
+    gap: 12px;
+    padding: 22px 6px;
+    border-bottom: 1px solid #cfcdc5;
+    transition: background-color 0.15s;
+  }
+
+  .list li a:hover,
+  .list li a:focus-visible {
+    background: #141414;
+    color: #f4f3ef;
+    outline: none;
+  }
+
+  .list__n {
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.6;
+  }
+
+  .list__name {
+    font-size: 1.5rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  .list__blurb {
+    opacity: 0.75;
+  }
+
+  .list__go {
+    text-align: right;
+  }
+
+  @media (max-width: 640px) {
+    .list li a {
+      grid-template-columns: 2.2rem minmax(0, 1fr) 1.5rem;
+    }
+
+    .list__blurb {
+      grid-column: 2 / -1;
+    }
+  }
+</style>

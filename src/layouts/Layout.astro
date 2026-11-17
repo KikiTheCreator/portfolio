@@ -10,7 +10,16 @@ import "../styles/themes.css";
 import "../styles/global.css";
 import { site, themes } from "../data/site";
 
+interface Props {
+  // Keep the page out of search results (used by the saved designs in /re).
+  noindex?: boolean;
+}
+
+const { noindex = false } = Astro.props;
 const themeIds = themes.map((theme) => theme.id);
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL("/og-image.png", Astro.site);
+const title = `${site.name} — ${site.role}`;
 ---
 
 <!doctype html>
@@ -20,9 +29,26 @@ const themeIds = themes.map((theme) => theme.id);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- One icon per theme in public/. The scripts swap it with the theme. -->
     <link rel="icon" type="image/svg+xml" href={`/favicon-${site.defaultTheme}.svg`} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
     <slot name="head" />
-    <title>{site.name}</title>
+    <title>{title}</title>
     <meta name="description" content={site.hero.intro} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={site.hero.intro} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name}, ${site.role.toLowerCase()}, portfolio`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={site.hero.intro} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={`${site.name}, ${site.role.toLowerCase()}, portfolio`} />
     <!-- Runs before paint so a saved theme never flashes the default one. -->
     <script is:inline define:vars={{ themeIds }}>
       try {

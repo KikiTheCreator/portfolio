@@ -1,0 +1,659 @@
+---
+// The home page: full-bleed colour panels and very large type.
+// The font has a width axis; the headline narrows and stretches as the
+// pointer moves across the screen.
+import "@fontsource-variable/archivo/wdth.css";
+import { site } from "../data/site";
+import { elapsed } from "../data/elapsed";
+
+const { hero, summary, work, experience, about, contact } = site;
+// Colour themes. "orange" is the default; green and blue come from the
+// original site's Unit-01 and Unit-00 themes. Colours are set in the CSS
+// below under html[data-po-theme="..."].
+const poThemes = [
+  { id: "orange", label: "Orange", swatch: "#ff4a1c" },
+  { id: "green", label: "Green", swatch: "#a8f230" },
+  { id: "blue", label: "Blue", swatch: "#2c40d2" },
+];
+const pad = (n: number) => String(n).padStart(2, "0");
+
+// First guess at a size that makes a word fill the panel's width. The
+// script at the bottom then measures the real word and corrects it;
+// 0.95em per letter is wide enough that the guess never overflows much.
+// It is also capped by the screen's height, so a short word like "Zen"
+// on a wide, short screen doesn't push the rest of its panel off screen.
+const fit = (text: string, max = 44) =>
+  `min(${(90 / (text.length * 0.95)).toFixed(1)}vw, ${max}vw, 42vh)`;
+---
+
+<!-- Applies the saved colour theme before the first paint, so the page
+     doesn't flash orange first. -->
+<script is:inline>
+  try {
+    const saved = localStorage.getItem("po-theme");
+    if (saved) document.documentElement.dataset.poTheme = saved;
+  } catch {}
+</script>
+
+<div class="po">
+  <header class="po-panel po-panel--hot po-hero">
+    <p class="po-strip">
+      <span>{site.name}</span>
+      <span>{site.role}</span>
+      <span>{site.location}</span>
+      <span class="po-strip__status">{site.status}</span>
+      <span class="po-themes" role="group" aria-label="Colour theme">
+        {
+          poThemes.map((theme) => (
+            <button
+              type="button"
+              data-po-set={theme.id}
+              aria-label={`${theme.label} theme`}
+              title={theme.label}
+              style={`--swatch:${theme.swatch}`}
+            />
+          ))
+        }
+      </span>
+    </p>
+
+    <h1 data-stretch>
+      <span class="po-hero__small">{hero.headline.before}</span>
+      {
+        hero.headline.highlight.split(" ").map((word) => (
+          <span class="po-hero__big" data-fit="30" style={`font-size:${fit(word, 30)}`}>
+            {word}{" "}
+          </span>
+        ))
+      }
+      <span class="po-hero__small">{hero.headline.after}</span>
+    </h1>
+
+    <div class="po-hero__foot">
+      <p>{hero.intro}</p>
+      <a href="#work">{hero.primaryCta.label} ↓</a>
+    </div>
+  </header>
+
+  <main>
+    {
+      work.projects.map((project, index) => (
+        <section class="po-panel po-panel--dark" id={index === 0 ? "work" : undefined}>
+          <p class="po-strip">
+            <span>
+              {pad(index + 1)} / {work.title}
+            </span>
+            <span>{project.kind}</span>
+            <span>{project.year}</span>
+            <span class="po-strip__status">{project.status}</span>
+          </p>
+          <h2 class="po-word" data-fit="44" style={`font-size:${fit(project.name)}`}>
+            {project.name}
+          </h2>
+          <div class="po-cols">
+            <p class="po-figure">
+              <b>{project.metric.value}</b>
+              <span>{project.metric.label}</span>
+            </p>
+            <div>
+              <p class="po-text">{project.summary}</p>
+              <p class="po-slash">{project.tags.join(" / ")}</p>
+              {project.links.map((link) => (
+                <a class="po-button" href={link.href}>{link.label} ↗</a>
+              ))}
+            </div>
+          </div>
+        </section>
+      ))
+    }
+
+    <section class="po-panel po-panel--paper" id="experience">
+      <p class="po-strip">
+        <span>{pad(work.projects.length + 1)} / {experience.title}</span>
+      </p>
+      <dl class="po-figures">
+        {
+          summary.rows.map((row) => (
+            <div>
+              {"since" in row && row.since ? (
+                <dd data-since={row.since}>{elapsed(row.since)}</dd>
+              ) : (
+                <dd>{row.value}</dd>
+              )}
+              <dt>{row.label}</dt>
+            </div>
+          ))
+        }
+      </dl>
+      {
+        experience.entries.map((entry) => (
+          <article class="po-cols po-cols--rule">
+            <div>
+              <p class="po-period">{entry.period}</p>
+              <h2 class="po-title">{entry.role}</h2>
+              <p class="po-period">{entry.place}</p>
+            </div>
+            <p class="po-text">{entry.note}</p>
+          </article>
+        ))
+      }
+    </section>
+
+    <section class="po-panel po-panel--dark" id="method">
+      <p class="po-strip">
+        <span>{pad(work.projects.length + 2)} / How I work</span>
+      </p>
+      <ol class="po-rules">
+        {
+          about.principles.map((principle, index) => (
+            <li>
+              <span class="po-rules__n">{pad(index + 1)}</span>
+              <h2>{principle.title}</h2>
+              <p>{principle.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="po-panel po-panel--paper" id="about">
+      <p class="po-strip">
+        <span>{pad(work.projects.length + 3)} / {about.title}</span>
+      </p>
+      <div class="po-about">
+        {about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+      <ul class="po-stack" aria-label="Stack">
+        {site.stack.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+  </main>
+
+  <footer class="po-panel po-panel--hot po-end" id="contact">
+    <p class="po-strip">
+      <span>{pad(work.projects.length + 4)} / Contact</span>
+      <span class="po-strip__status">{site.status}</span>
+    </p>
+    <h2 class="po-word" data-fit="20" style={`font-size:${fit(contact.title, 20)}`}>{contact.title}</h2>
+    <div class="po-cols">
+      <p class="po-text">{contact.text}</p>
+      <div>
+        <a class="po-mail" href={`mailto:${site.email}`}>{site.email}</a>
+        <p class="po-links">
+          {site.links.map((link) => <a href={link.href}>{link.label} ↗</a>)}
+        </p>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+  // Make each big word as wide as its panel, but no taller than 42% of the
+  // screen, so the whole panel stays in view. The word is
+  // measured at the font's widest setting, so it still fits when the
+  // pointer stretches it.
+  const words = [...document.querySelectorAll<HTMLElement>("[data-fit]")];
+
+  function fitWords() {
+    for (const word of words) {
+      const probe = word.cloneNode(true) as HTMLElement;
+      probe.style.cssText =
+        "position:absolute;visibility:hidden;width:auto;white-space:nowrap;font-size:100px;font-stretch:125%;transition:none";
+      word.parentElement!.append(probe);
+      const emWidth = probe.getBoundingClientRect().width / 100;
+      probe.remove();
+      const largest = Math.min(
+        (Number(word.dataset.fit) / 100) * window.innerWidth,
+        window.innerHeight * 0.42,
+      );
+      word.style.fontSize = `${Math.min(largest, (word.clientWidth * 0.99) / emWidth)}px`;
+    }
+  }
+
+  fitWords();
+  document.fonts.ready.then(fitWords);
+  window.addEventListener("resize", fitWords);
+
+  // Theme switch: remember the choice and mark the active button.
+  const themeButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-po-set]")];
+  const markTheme = () => {
+    const current = document.documentElement.dataset.poTheme || "orange";
+    themeButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.poSet === current)));
+  };
+  themeButtons.forEach((button) =>
+    button.addEventListener("click", () => {
+      document.documentElement.dataset.poTheme = button.dataset.poSet!;
+      try {
+        localStorage.setItem("po-theme", button.dataset.poSet!);
+      } catch {}
+      markTheme();
+    }),
+  );
+  markTheme();
+
+  // Map the pointer's horizontal position to the font's width axis.
+  const headline = document.querySelector<HTMLElement>("[data-stretch]");
+  const calm = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  if (headline && !calm.matches) {
+    window.addEventListener("pointermove", (event) => {
+      if (event.pointerType !== "mouse") return;
+      const ratio = event.clientX / window.innerWidth;
+      headline.style.setProperty("--wdth", String(Math.round(62 + ratio * 63)));
+    });
+  }
+</script>
+
+<style is:global>
+  .po {
+    /* --hot: hero and contact panels; --on-hot: text on them.
+       --ink / --paper: dark and light panels. --pop-dark / --pop-paper:
+       the accent colour on each of those. */
+    --hot: #ff4a1c;
+    --on-hot: #0e0e0e;
+    --ink: #0e0e0e;
+    --paper: #f1eee6;
+    --pop-dark: #ff4a1c;
+    --pop-paper: #d63408;
+    background: var(--ink);
+    font: 500 17px/1.5 "Archivo Variable", "Arial Narrow", sans-serif;
+  }
+
+  /* Unit-01: dark purple and lime green. */
+  html[data-po-theme="green"] .po {
+    --hot: #a8f230;
+    --on-hot: #0e0919;
+    --ink: #0e0919;
+    --paper: #f1f5e6;
+    --pop-dark: #a8f230;
+    --pop-paper: #3d6b00;
+  }
+
+  /* Unit-00: blue-white and cobalt. */
+  html[data-po-theme="blue"] .po {
+    --hot: #2c40d2;
+    --on-hot: #f2f4fb;
+    --ink: #0b1030;
+    --paper: #f2f4fb;
+    --pop-dark: #8b9bff;
+    --pop-paper: #2c40d2;
+  }
+
+  .po-themes {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .po-themes button {
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    background: var(--swatch);
+    cursor: pointer;
+  }
+
+  .po-themes button[aria-pressed="true"] {
+    box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px currentColor;
+  }
+
+  .po ::selection {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .po :focus-visible {
+    outline: 3px solid var(--fg);
+    outline-offset: 3px;
+  }
+
+  .po-panel {
+    overflow-x: clip;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(16px, 2.6vw, 36px) clamp(16px, 4vw, 56px) clamp(32px, 6vw, 80px);
+    background: var(--bg);
+    color: var(--fg);
+  }
+
+  .po-panel--hot {
+    --bg: var(--hot);
+    --fg: var(--on-hot);
+  }
+
+  .po-panel--dark {
+    --bg: var(--ink);
+    --fg: var(--paper);
+    --pop: var(--pop-dark);
+  }
+
+  .po-panel--paper {
+    --bg: var(--paper);
+    --fg: var(--ink);
+    --pop: var(--pop-paper);
+  }
+
+  .po-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 28px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid currentColor;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .po-strip__status {
+    margin-left: auto;
+  }
+
+  .po-strip__status::before {
+    content: "● ";
+  }
+
+  /* ── Hero ── */
+
+  .po-hero {
+    min-height: 100vh;
+    min-height: 100svh;
+    padding-bottom: 68px;
+  }
+
+  .po-hero h1 {
+    --wdth: 100;
+    display: flex;
+    flex-direction: column;
+    margin-block: auto;
+    padding-block: 32px;
+    font-weight: 900;
+    line-height: 0.84;
+    text-transform: uppercase;
+  }
+
+  .po-hero__small {
+    font-size: clamp(1.6rem, 4.6vw, 4.4rem);
+    font-stretch: 100%;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .po-hero__big {
+    font-stretch: calc(var(--wdth) * 1%);
+    letter-spacing: -0.03em;
+    transition: font-stretch 0.25s ease-out;
+  }
+
+  .po-hero__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 20px 48px;
+  }
+
+  .po-hero__foot p {
+    max-width: 52ch;
+    font-size: 1.06rem;
+  }
+
+  .po-hero__foot a,
+  .po-button {
+    padding: 14px 24px;
+    background: var(--fg);
+    color: var(--bg);
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .po-hero__foot a:hover,
+  .po-button:hover {
+    box-shadow: inset 0 0 0 3px var(--fg);
+    background: var(--bg);
+    color: var(--fg);
+  }
+
+  /* ── Shared pieces ── */
+
+  .po-word {
+    margin-block: 0.12em 0.16em;
+    font-weight: 900;
+    font-stretch: 125%;
+    line-height: 0.86;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+  }
+
+  .po-panel--dark .po-word {
+    color: var(--pop);
+  }
+
+  .po-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 24px clamp(24px, 6vw, 96px);
+  }
+
+  .po-cols--rule {
+    margin-top: clamp(28px, 5vw, 64px);
+    padding-top: 24px;
+    border-top: 2px solid currentColor;
+  }
+
+  .po-text {
+    max-width: 58ch;
+    font-size: 1.1rem;
+  }
+
+  .po-slash {
+    margin-block: 18px 26px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pop);
+  }
+
+  .po-button {
+    display: inline-block;
+  }
+
+  .po-figure {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 1.05rem;
+    line-height: 1.25;
+  }
+
+  .po-figure b {
+    font-size: clamp(5rem, 11vw, 10rem);
+    font-weight: 900;
+    font-stretch: 62%;
+    line-height: 0.8;
+  }
+
+  .po-figure span {
+    max-width: 14ch;
+  }
+
+  /* ── Figures and experience ── */
+
+  .po-figures {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    gap: 20px clamp(16px, 3vw, 40px);
+    margin-top: clamp(20px, 4vw, 48px);
+  }
+
+  .po-figures dd {
+    font-size: clamp(1.9rem, 4.6vw, 4.6rem);
+    font-weight: 900;
+    font-stretch: 75%;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+
+  .po-figures div:first-child dd {
+    color: var(--pop);
+  }
+
+  .po-figures dt {
+    margin-top: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .po-title {
+    margin-block: 6px;
+    font-size: clamp(1.8rem, 3.6vw, 3.2rem);
+    font-weight: 900;
+    font-stretch: 85%;
+    line-height: 0.98;
+    text-transform: uppercase;
+  }
+
+  .po-period {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ── Principles ── */
+
+  .po-rules li {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1.3fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 8px 24px;
+    padding-block: clamp(18px, 3vw, 34px);
+    border-bottom: 2px solid currentColor;
+  }
+
+  .po-rules__n {
+    font-weight: 800;
+    color: var(--pop);
+  }
+
+  .po-rules h2 {
+    font-size: clamp(2rem, 6.2vw, 6rem);
+    font-weight: 900;
+    font-stretch: 70%;
+    line-height: 0.9;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+
+  .po-rules li:hover h2 {
+    color: var(--pop);
+  }
+
+  /* ── About and stack ── */
+
+  .po-about {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px clamp(24px, 5vw, 72px);
+    margin-top: clamp(24px, 4vw, 48px);
+    font-size: clamp(1.1rem, 1.9vw, 1.5rem);
+    line-height: 1.35;
+  }
+
+  .po-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.36em;
+    margin-top: clamp(28px, 5vw, 64px);
+    padding-top: 20px;
+    border-top: 2px solid currentColor;
+    font-size: clamp(1.8rem, 5.4vw, 5rem);
+    font-weight: 900;
+    font-stretch: 70%;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .po-stack li:nth-child(odd) {
+    color: var(--pop);
+  }
+
+  /* ── Contact ── */
+
+  .po-end {
+    padding-bottom: 110px;
+  }
+
+  .po-mail {
+    border-bottom: 3px solid currentColor;
+    font-size: clamp(1.05rem, 2.5vw, 2rem);
+    font-weight: 800;
+    overflow-wrap: anywhere;
+  }
+
+  .po-mail:hover,
+  .po-links a:hover {
+    opacity: 0.6;
+  }
+
+  .po-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    margin-top: 22px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 760px) {
+    .po-cols,
+    .po-about {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .po-figures {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .po-rules li {
+      grid-template-columns: 2.4rem minmax(0, 1fr);
+    }
+
+    .po-rules p {
+      grid-column: 2;
+    }
+
+    /* Phones: one quiet line per panel. Only the first label and the
+       status stay; the rest is already said further down. */
+    .po-strip {
+      flex-wrap: nowrap;
+      gap: 16px;
+      padding-bottom: 10px;
+      border-bottom-width: 1px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .po-strip span:not(:first-child, .po-strip__status, .po-themes) {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .po-hero__big {
+      transition: none;
+    }
+  }
+</style>

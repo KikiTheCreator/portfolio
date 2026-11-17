@@ -1,0 +1,731 @@
+---
+// "Blueprint": the portfolio as an engineering drawing.
+// The dimension lines around the headline show its real size on the
+// visitor's screen and update when the window is resized.
+import "@fontsource/barlow-condensed/500.css";
+import "@fontsource/barlow-condensed/600.css";
+import "@fontsource/barlow/400.css";
+import "@fontsource/barlow/500.css";
+import "@fontsource/ibm-plex-mono/400.css";
+import Bare from "../../layouts/Bare.astro";
+import { site } from "../../data/site";
+import { elapsed } from "../../data/elapsed";
+
+const { hero, summary, work, experience, about, contact } = site;
+const letters = "ABCDEFGH";
+const drawn = new Date().toLocaleDateString("en", { year: "numeric", month: "short", day: "2-digit" });
+---
+
+<Bare slug="blueprint">
+  <div class="bp">
+    <div class="bp-sheet">
+      <header class="bp-head">
+        <p>{site.name} — {site.role}</p>
+        <p class="bp-head__right">
+          <span>Sheet 1 / 1</span>
+          <span class="bp-head__status">{site.status}</span>
+        </p>
+      </header>
+
+      <main>
+        <section class="bp-hero">
+          <p class="bp-tag">Fig. 1 — Front elevation</p>
+          <div class="bp-measure">
+            <h1 data-measure>
+              {hero.headline.before} <em>{hero.headline.highlight}</em>{" "}
+              {hero.headline.after}
+            </h1>
+            <p class="bp-dim bp-dim--w" aria-hidden="true"><span data-dim="width">width</span></p>
+            <p class="bp-dim bp-dim--h" aria-hidden="true"><span data-dim="height">height</span></p>
+          </div>
+          <p class="bp-intro">{hero.intro}</p>
+        </section>
+
+        {
+          work.projects.map((project, index) => (
+            <section class="bp-block bp-detail">
+              <h2 class="bp-tag">
+                Detail {letters[index]} — {work.title}
+              </h2>
+              <div class="bp-detail__grid">
+                <figure class="bp-part">
+                  <p class="bp-part__name">{project.name}</p>
+                  <p class="bp-balloon">
+                    <b>{project.metric.value}</b>
+                    <span>{project.metric.label}</span>
+                  </p>
+                </figure>
+                <div>
+                  <p class="bp-copy">{project.summary}</p>
+                  <dl class="bp-spec">
+                    <div>
+                      <dt>Type</dt>
+                      <dd>{project.kind}</dd>
+                    </div>
+                    <div>
+                      <dt>Year</dt>
+                      <dd>{project.year}</dd>
+                    </div>
+                    <div>
+                      <dt>Status</dt>
+                      <dd>{project.status}</dd>
+                    </div>
+                    <div>
+                      <dt>Materials</dt>
+                      <dd>{project.tags.join(" / ")}</dd>
+                    </div>
+                  </dl>
+                  {project.links.map((link) => (
+                    <a class="bp-link" href={link.href}>{link.label} ↗</a>
+                  ))}
+                </div>
+              </div>
+            </section>
+          ))
+        }
+
+        <section class="bp-block">
+          <h2 class="bp-tag">Revision history — {experience.title}</h2>
+          <div class="bp-table bp-table--rev" role="table">
+            <div class="bp-table__head" role="row">
+              <span role="columnheader">Rev</span>
+              <span role="columnheader">Period</span>
+              <span role="columnheader">Description</span>
+            </div>
+            {
+              experience.entries.map((entry, index) => (
+                <div role="row">
+                  <span role="cell" class="bp-table__rev">{letters[index]}</span>
+                  <span role="cell" class="bp-mono">{entry.period}</span>
+                  <span role="cell">
+                    <strong>{entry.role}</strong>
+                    <em>{entry.place}</em>
+                    {entry.note}
+                  </span>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+
+        <div class="bp-pair">
+          <section class="bp-block">
+            <h2 class="bp-tag">General notes — How I work</h2>
+            <ol class="bp-notes">
+              {
+                about.principles.map((principle, index) => (
+                  <li>
+                    <span class="bp-notes__n">{index + 1}</span>
+                    <p>
+                      <strong>{principle.title}.</strong> {principle.text}
+                    </p>
+                  </li>
+                ))
+              }
+            </ol>
+            <div class="bp-about">
+              {about.paragraphs.map((paragraph) => <p class="bp-copy">{paragraph}</p>)}
+            </div>
+          </section>
+
+          <section class="bp-block">
+            <h2 class="bp-tag">Bill of materials — Stack</h2>
+            <ol class="bp-bom">
+              {
+                site.stack.map((item, index) => (
+                  <li>
+                    <span class="bp-mono">{String(index + 1).padStart(2, "0")}</span>
+                    {item}
+                  </li>
+                ))
+              }
+            </ol>
+          </section>
+        </div>
+      </main>
+
+      <footer class="bp-title" id="contact">
+        <div class="bp-title__main">
+          <p class="bp-cell__label">{contact.title}</p>
+          <a class="bp-title__mail" href={`mailto:${site.email}`}>{site.email}</a>
+          <p class="bp-copy">{contact.text}</p>
+        </div>
+        <dl class="bp-title__cells">
+          <div class="bp-cell--wide">
+            <dt class="bp-cell__label">Drawn by</dt>
+            <dd>{site.name}</dd>
+          </div>
+          <div>
+            <dt class="bp-cell__label">Location</dt>
+            <dd>{site.location}</dd>
+          </div>
+          <div>
+            <dt class="bp-cell__label">Date</dt>
+            <dd>{drawn}</dd>
+          </div>
+          {
+            summary.rows.map((row) => (
+              <div>
+                <dt class="bp-cell__label">{row.label}</dt>
+                {"since" in row && row.since ? (
+                  <dd data-since={row.since}>{elapsed(row.since)}</dd>
+                ) : (
+                  <dd>{row.value}</dd>
+                )}
+              </div>
+            ))
+          }
+          {
+            site.links.map((link) => (
+              <div>
+                <dt class="bp-cell__label">Ref.</dt>
+                <dd>
+                  <a href={link.href}>{link.label} ↗</a>
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+      </footer>
+    </div>
+  </div>
+</Bare>
+
+<script>
+  // Write the headline's real size into its dimension lines.
+  const target = document.querySelector<HTMLElement>("[data-measure]");
+  const width = document.querySelector<HTMLElement>('[data-dim="width"]');
+  const height = document.querySelector<HTMLElement>('[data-dim="height"]');
+
+  if (target && width && height) {
+    new ResizeObserver(() => {
+      const box = target.getBoundingClientRect();
+      width.textContent = `${Math.round(box.width)} px`;
+      height.textContent = `${Math.round(box.height)} px`;
+    }).observe(target);
+  }
+</script>
+
+<style is:global>
+  .bp {
+    --blue: #0f347a;
+    --deep: #0b2a66;
+    --line: rgb(255 255 255 / 0.36);
+    --faint: rgb(255 255 255 / 0.075);
+    --ink: #eef3ff;
+    --soft: #b4c6ee;
+    --mark: #ffd447;
+    --label: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+    min-height: 100vh;
+    padding: clamp(10px, 2vw, 28px);
+    background-color: var(--blue);
+    /* Drafting grid: a fine 24px square, with a heavier line every fifth. */
+    background-image:
+      linear-gradient(var(--faint) 1px, transparent 1px),
+      linear-gradient(90deg, var(--faint) 1px, transparent 1px),
+      linear-gradient(var(--faint) 1px, transparent 1px),
+      linear-gradient(90deg, var(--faint) 1px, transparent 1px);
+    background-size:
+      24px 24px,
+      24px 24px,
+      120px 120px,
+      120px 120px;
+    color: var(--ink);
+    font: 17px/1.55 "Barlow", system-ui, sans-serif;
+  }
+
+  .bp ::selection {
+    background: var(--mark);
+    color: var(--deep);
+  }
+
+  .bp :focus-visible {
+    outline: 2px solid var(--mark);
+    outline-offset: 3px;
+  }
+
+  .bp-sheet {
+    max-width: 1320px;
+    margin-inline: auto;
+    border: 2px solid var(--ink);
+  }
+
+  .bp-tag,
+  .bp-head,
+  .bp-cell__label,
+  .bp-table__head,
+  .bp-spec dt {
+    font-family: var(--label);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .bp-mono {
+    font-family: var(--mono);
+    font-size: 0.84rem;
+  }
+
+  .bp-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 4px 24px;
+    padding: 10px clamp(16px, 3vw, 36px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .bp-head__right {
+    display: flex;
+    gap: 24px;
+  }
+
+  .bp-head__status {
+    color: var(--mark);
+  }
+
+  .bp-tag {
+    display: inline-block;
+    margin-bottom: 26px;
+    padding: 3px 10px;
+    border: 1px solid var(--line);
+    color: var(--soft);
+  }
+
+  /* ── Hero: the headline as a measured drawing ── */
+
+  .bp-hero {
+    padding: clamp(28px, 5vw, 64px) clamp(16px, 3vw, 36px) clamp(36px, 5vw, 64px);
+  }
+
+  .bp-measure {
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
+    padding: 0 0 46px 46px;
+  }
+
+  .bp-measure h1 {
+    max-width: 4.4em;
+    outline: 1px dashed var(--line);
+    font-family: var(--label);
+    font-size: clamp(3.2rem, 11.4vw, 10.5rem);
+    font-weight: 600;
+    line-height: 0.9;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--ink);
+  }
+
+  .bp-measure h1 em {
+    font-style: normal;
+    color: var(--ink);
+    -webkit-text-stroke: 0;
+  }
+
+  /* A dimension line: a rule with a tick at each end and the size in the middle. */
+  .bp-dim {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    color: var(--mark);
+  }
+
+  .bp-dim::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    background: currentColor;
+  }
+
+  .bp-dim span {
+    position: relative;
+    padding: 2px 8px;
+    background: var(--blue);
+    white-space: nowrap;
+  }
+
+  .bp-dim--w {
+    left: 46px;
+    right: 0;
+    bottom: 8px;
+    height: 16px;
+    border-inline: 1px solid currentColor;
+  }
+
+  .bp-dim--w::before {
+    height: 1px;
+  }
+
+  .bp-dim--h {
+    top: 0;
+    bottom: 46px;
+    left: 8px;
+    width: 16px;
+    border-block: 1px solid currentColor;
+  }
+
+  .bp-dim--h::before {
+    width: 1px;
+  }
+
+  .bp-dim--h span {
+    transform: rotate(-90deg);
+  }
+
+  .bp-intro {
+    max-width: 58ch;
+    margin: 28px 0 0 46px;
+    font-size: 1.12rem;
+    color: var(--soft);
+  }
+
+  /* ── Blocks ── */
+
+  .bp-block {
+    padding: clamp(24px, 3.4vw, 44px) clamp(16px, 3vw, 36px);
+    border-top: 1px solid var(--line);
+  }
+
+  .bp-copy {
+    max-width: 60ch;
+    color: var(--soft);
+  }
+
+  .bp-detail__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(24px, 5vw, 72px);
+  }
+
+  /* The project drawn as a part: corner marks, centre lines and a balloon. */
+  .bp-part {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: clamp(220px, 30vw, 380px);
+    border: 1px solid var(--ink);
+    background:
+      linear-gradient(var(--line), var(--line)) center / 1px 100% no-repeat,
+      linear-gradient(var(--line), var(--line)) center / 100% 1px no-repeat;
+  }
+
+  .bp-part__name {
+    padding-inline: 0.2em;
+    background: var(--blue);
+    font-family: var(--label);
+    font-size: clamp(5rem, 15vw, 13rem);
+    font-weight: 600;
+    line-height: 0.9;
+    text-transform: uppercase;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--ink);
+  }
+
+  .bp-balloon {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 70%;
+    padding-right: 10px;
+    background: var(--blue);
+    font-size: 0.84rem;
+    line-height: 1.25;
+    color: var(--mark);
+  }
+
+  .bp-balloon b {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.6rem;
+    aspect-ratio: 1;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 400;
+  }
+
+  .bp-spec {
+    margin-block: 22px;
+    border-top: 1px solid var(--line);
+  }
+
+  .bp-spec > div {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    gap: 12px;
+    padding-block: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .bp-spec dt {
+    padding-top: 3px;
+    color: var(--soft);
+  }
+
+  .bp-link {
+    display: inline-block;
+    padding: 10px 18px;
+    border: 1.5px solid var(--mark);
+    font-family: var(--label);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mark);
+  }
+
+  .bp-link:hover {
+    background: var(--mark);
+    color: var(--deep);
+  }
+
+  /* ── Tables ── */
+
+  .bp-table {
+    border: 1px solid var(--line);
+  }
+
+  .bp-table > div {
+    display: grid;
+    grid-template-columns: 4rem 11rem minmax(0, 1fr);
+  }
+
+  .bp-table > div + div {
+    border-top: 1px solid var(--line);
+  }
+
+  .bp-table > div > span {
+    padding: 12px 16px;
+  }
+
+  .bp-table > div > span + span {
+    border-left: 1px solid var(--line);
+  }
+
+  .bp-table__head {
+    color: var(--soft);
+  }
+
+  .bp-table__rev {
+    font-family: var(--label);
+    font-size: 1.6rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--mark);
+  }
+
+  .bp-table strong,
+  .bp-table em {
+    display: block;
+  }
+
+  .bp-table strong {
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+
+  .bp-table em {
+    margin-bottom: 8px;
+    font-style: normal;
+    color: var(--soft);
+  }
+
+  .bp-pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    border-top: 1px solid var(--line);
+  }
+
+  .bp-pair .bp-block {
+    border-top: 0;
+  }
+
+  .bp-pair .bp-block + .bp-block {
+    border-left: 1px solid var(--line);
+  }
+
+  .bp-notes {
+    display: grid;
+    gap: 14px;
+  }
+
+  .bp-notes li {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .bp-notes__n {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1.5px solid var(--mark);
+    border-radius: 50%;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--mark);
+  }
+
+  .bp-notes p {
+    max-width: 56ch;
+    color: var(--soft);
+  }
+
+  .bp-notes strong {
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .bp-about {
+    display: grid;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--line);
+  }
+
+  .bp-bom li {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding-block: 7px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .bp-bom li:first-child {
+    border-top: 1px solid var(--line);
+  }
+
+  .bp-bom .bp-mono {
+    color: var(--soft);
+  }
+
+  /* ── Title block, where a drawing keeps its author and date ── */
+
+  .bp-title {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    border-top: 2px solid var(--ink);
+  }
+
+  .bp-title__main {
+    padding: clamp(20px, 3vw, 36px);
+  }
+
+  .bp-title__mail {
+    display: inline-block;
+    margin-block: 6px 14px;
+    border-bottom: 2px solid var(--mark);
+    font-family: var(--label);
+    font-size: clamp(1.3rem, 3vw, 2.2rem);
+    font-weight: 500;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  .bp-title__mail:hover,
+  .bp-title__cells a:hover {
+    color: var(--mark);
+  }
+
+  .bp-title__cells {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-left: 2px solid var(--ink);
+  }
+
+  .bp-title__cells > div {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .bp-title__cells > div:nth-child(even) {
+    border-right: 1px solid var(--line);
+  }
+
+  .bp-title__cells .bp-cell--wide {
+    grid-column: 1 / -1;
+    border-right: 0;
+  }
+
+  .bp-cell--wide dd {
+    font-family: var(--label);
+    font-size: 1.7rem;
+    font-weight: 600;
+    line-height: 1.15;
+    text-transform: uppercase;
+  }
+
+  .bp-cell__label {
+    font-size: 0.72rem;
+    color: var(--soft);
+  }
+
+  .bp-title__cells a {
+    border-bottom: 1px solid var(--line);
+  }
+
+  @media (max-width: 820px) {
+    .bp-detail__grid,
+    .bp-pair,
+    .bp-title {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .bp-pair .bp-block + .bp-block {
+      border-top: 1px solid var(--line);
+      border-left: 0;
+    }
+
+    .bp-title__cells {
+      border-top: 2px solid var(--ink);
+      border-left: 0;
+    }
+
+    .bp-measure {
+      padding: 0 0 38px 30px;
+    }
+
+    .bp-dim--w {
+      left: 30px;
+    }
+
+    .bp-dim--h {
+      bottom: 38px;
+      left: 0;
+    }
+
+    .bp-intro {
+      margin-left: 0;
+    }
+
+    .bp-table__head {
+      display: none !important;
+    }
+
+    .bp-table > div {
+      grid-template-columns: 3.4rem minmax(0, 1fr);
+    }
+
+    .bp-table > div > span:last-child {
+      grid-column: 1 / -1;
+      border-top: 1px solid var(--line);
+      border-left: 0;
+    }
+  }
+</style>

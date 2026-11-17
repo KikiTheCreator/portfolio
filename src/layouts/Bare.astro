@@ -1,0 +1,166 @@
+---
+// Layout for the home page (Poster) and the saved designs under /re.
+// It loads none of the original site's styles, so each design starts
+// from a blank page.
+import archivo from "@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url";
+import { site } from "../data/site";
+import { concepts } from "../data/concepts";
+
+interface Props {
+  // Which saved design this is. Leave it out on the home page.
+  slug?: string;
+  // The home page: indexed by search engines, with share previews.
+  home?: boolean;
+}
+
+const { slug, home = false } = Astro.props;
+const index = concepts.findIndex((concept) => concept.slug === slug);
+const concept = concepts[index];
+const prev = concepts[(index + concepts.length - 1) % concepts.length];
+const next = concepts[(index + 1) % concepts.length];
+const title = home
+  ? `${site.name} — ${site.role}`
+  : `${site.name} — ${concept ? concept.name : "Saved designs"}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL("/og-poster.png", Astro.site);
+const ogAlt = `${site.name}, ${site.role.toLowerCase()}, portfolio`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={site.hero.intro} />
+    {
+      home ? (
+        <>
+          <link rel="icon" type="image/svg+xml" href="/favicon-poster.svg" />
+          <meta name="theme-color" content="#ff4a1c" />
+          <link rel="canonical" href={canonical} />
+          {/* The headline font; loading it early stops the first screen from jumping. */}
+          <link rel="preload" as="font" type="font/woff2" href={archivo} crossorigin />
+          <meta property="og:type" content="website" />
+          <meta property="og:site_name" content={site.name} />
+          <meta property="og:url" content={canonical} />
+          <meta property="og:title" content={title} />
+          <meta property="og:description" content={site.hero.intro} />
+          <meta property="og:image" content={ogImage} />
+          <meta property="og:image:type" content="image/png" />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta property="og:image:alt" content={ogAlt} />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={title} />
+          <meta name="twitter:description" content={site.hero.intro} />
+          <meta name="twitter:image" content={ogImage} />
+          <meta name="twitter:image:alt" content={ogAlt} />
+        </>
+      ) : (
+        <>
+          {/* Saved drafts: reachable by link, kept out of search results. */}
+          <meta name="robots" content="noindex" />
+          <link rel="icon" type="image/svg+xml" href={`/favicon-${site.defaultTheme}.svg`} />
+        </>
+      )
+    }
+  </head>
+  <body>
+    <slot />
+    {
+      concept && (
+        <nav class="re-nav" aria-label="Design versions">
+          <a href={`/re/${prev.slug}`} aria-label={`Previous design: ${prev.name}`}>←</a>
+          <a href="/re" class="re-nav__name">
+            {index + 1}/{concepts.length} · {concept.name}
+          </a>
+          <a href={`/re/${next.slug}`} aria-label={`Next design: ${next.name}`}>→</a>
+        </nav>
+      )
+    }
+    <script>
+      import { elapsed } from "../data/elapsed";
+
+      document.querySelectorAll<HTMLElement>("[data-since]").forEach((el) => {
+        el.textContent = elapsed(el.dataset.since!);
+      });
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body,
+  h1,
+  h2,
+  h3,
+  p,
+  ul,
+  ol,
+  dl,
+  dd,
+  figure {
+    margin: 0;
+    padding: 0;
+  }
+
+  ul,
+  ol {
+    list-style: none;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  body {
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* The switcher between designs. Same look on every page on purpose,
+     so it reads as a tool and not as part of the design. */
+  .re-nav {
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    z-index: 100;
+    display: flex;
+    border-radius: 999px;
+    background: #111;
+    color: #fff;
+    font: 500 12px/1 system-ui, sans-serif;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.25), 0 6px 20px rgb(0 0 0 / 0.3);
+  }
+
+  .re-nav a {
+    padding: 10px 12px;
+  }
+
+  .re-nav a:hover {
+    opacity: 0.65;
+  }
+
+  .re-nav a:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: -4px;
+    border-radius: 999px;
+  }
+
+  @media print {
+    .re-nav {
+      display: none;
+    }
+  }
+</style>
